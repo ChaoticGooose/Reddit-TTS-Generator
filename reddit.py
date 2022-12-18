@@ -21,5 +21,6 @@ class Reddit:
                 })
         except Exception as e:
             print(f'ERROR: "{e}"') # print the error if there is one, Most likly a redirect error/404 error if the subreddit doesn't exist or is banned
+            return 404
         for post in posts: # return the posts
             yield post
