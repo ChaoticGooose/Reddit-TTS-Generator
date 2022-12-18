@@ -1,7 +1,7 @@
 {
-    "enabled": false,
+    "enabled": false, // Set to true if using json config
 
-    "credentials": {
+    "credentials": { // Reddit API credentials
         "client_id": "",
         "client_secret": "",
         "password": "",
@@ -10,15 +10,15 @@
     },
 
     "tts_settings": {
-        "voice": 1,
-        "volume": 1.0,
-        "rate": 0.8
+        "voice": , // default voice is 0
+        "volume": , // default volume is 1.0
+        "rate":  // default rate is 200
     },
 
-    "subreddit_list": {
-        "subreddit1": {
+    "subreddit_list": { // List of subreddits to check
+        "subreddit1": { // Duplicate to add more subreddits
             "subreddit": "",
-            "post_number": 0
+            "post_number": 
         }
     }
 }
