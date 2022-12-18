@@ -1,0 +1,24 @@
+{
+    "enabled": false,
+
+    "credentials": {
+        "client_id": "",
+        "client_secret": "",
+        "password": "",
+        "user_agent": "",
+        "username": ""
+    },
+
+    "tts_settings": {
+        "voice": 1,
+        "volume": 1.0,
+        "rate": 0.8
+    },
+
+    "subreddit_list": {
+        "subreddit1": {
+            "subreddit": "",
+            "post_number": 0
+        }
+    }
+}
