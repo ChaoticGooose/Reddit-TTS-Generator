@@ -5,8 +5,21 @@ import json
 # init tts engine
 engine = pyttsx3.init()
 
+def file_name_cleaner(file_name):
+    # remove invalid characters from file name
+    invalid_chars = ['\\', '/', ':', '*', '?', '"', '<', '>', '|']
+    for char in invalid_chars:
+        file_name = file_name.replace(char, '')
+    # replace spaces with underscores
+    file_name = file_name.replace(' ', '_')
+    # shorten file name if too long
+    file_name = file_name[:150]+"..."
+    return file_name
+
 def get_settings():
     print('No settings.json file found or disabled. Please enter your settings below:')
+
+    # To Do: add error handling for invalid inputs
 
     # credentials
     client_id = input('Enter client_id: ')
@@ -26,6 +39,7 @@ def get_settings():
             continue
         break
 
+    subreddit_dict = {}
     for i in range(loop):
         subreddit = input('Enter subreddit: ') 
         while True:
@@ -66,13 +80,13 @@ def get_settings():
     # delete variables
     del rate, volume, voices
 
-    return client_id, client_secret, user_agent, username, password, subreddit, number
+    return client_id, client_secret, user_agent, username, password, subreddit_dict
 
 try:
     settings = json.load(open('settings.json'))
 
     if not settings['enabled']:
-        client_id, client_secret, user_agent, username, password, subreddit, number = get_settings()
+        client_id, client_secret, user_agent, username, password, subreddit_dict = get_settings()
     else:
         # collect credentials
         client_id = settings['credentials']['client_id']
@@ -103,8 +117,9 @@ try:
         # delete variables
         del settings, rate, volume, voice, rate_active, volume_active, voices, subreddit
 
+
 except FileNotFoundError: # if json doesn't exist request settings
-    client_id, client_secret, user_agent, username, password, subreddit, number = get_settings()
+    client_id, client_secret, user_agent, username, password, subreddit_dict = get_settings()
 
 # create reddit object with credentials (see reddit.py)
 reddit = Reddit(client_id, client_secret, password, user_agent, username)
@@ -115,11 +130,19 @@ post_list = list()
 
 for subreddit in subreddit_dict: # loop through subreddits found in settings.json
         print(f"Getting {subreddit_dict[subreddit]} posts from {subreddit}...") # status message
-        for x in reddit.get_posts(subreddit, subreddit_dict[subreddit]): # get posts from subreddit and remove the items from recived list  
+        get_posts = reddit.get_posts(subreddit, subreddit_dict[subreddit]) # get posts from subreddit
+        if get_posts == 404: # if subreddit doesn't exist
+            print(f"Subreddit {subreddit} not found or no posts avalible. Skipping...")
+            continue
+        for x in get_posts: #remove posts from list that are stickied
             post_list.append(x)
         print('Done.')
+if subreddit_dict == {}: # if all requests failed
+    print('ERROR: All subreddits/posts failed to load. Please check your settings.json file and try again.')
+    exit()
 
 print('Converting posts to audio...')
-for post in post_list: # loop through posts and save them as audio
-    engine.save_to_file(post['title']+post['content'], f"{post['title']}.mp3")
+for x in post_list: # loop through posts and save them as audio
+    print(x['title'])
+    engine.save_to_file(x['title']+x['content'], f'{file_name_cleaner(x["title"])}.mp3')
     engine.runAndWait()
