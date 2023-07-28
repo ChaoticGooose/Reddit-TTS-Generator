@@ -9,9 +9,10 @@ class TTS:
         self.volume = volume
         self.voices = voices
 
+        
         self.engine.setProperty('rate', self.engine.getProperty('rate')) # default 200 wpm
         self.engine.setProperty('volume', self.engine.getProperty('volume')) # default 1.0
-        self.engine.setProperty('voice', voices[self.engine.getProperty('voices')].id) # default 1
+        self.engine.setProperty('voice', self.engine.getProperty('voice')) # default english
 
     def to_speech(self, post_list):
         print('Converting posts to audio...')
